@@ -9,4 +9,3 @@ perform_sensitivity_analysis <- function(data, analysis_type, params = list()) {
     stop("Invalid sensitivity analysis type")
   }
 }
-}

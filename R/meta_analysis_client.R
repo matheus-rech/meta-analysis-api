@@ -1,3 +1,6 @@
+library(httr)
+library(jsonlite)
+
 MetaAnalysisClient <- R6::R6Class(
   "MetaAnalysisClient",
   public = list(
@@ -10,16 +13,16 @@ MetaAnalysisClient <- R6::R6Class(
     upload_data = function(file_path, file_type) {
       url <- paste0(self$base_url, "/upload")
       tryCatch({
-        response <- POST(
+        response <- httr::POST(
           url,
           body = list(
-            file = upload_file(file_path),
+            file = httr::upload_file(file_path),
             file_type = file_type
           ),
           encode = "multipart"
         )
-        stop_for_status(response)  # Check for HTTP errors
-        content(response, "parsed")  # Return parsed JSON
+        httr::stop_for_status(response)  # Check for HTTP errors
+        httr::content(response, "parsed")  # Return parsed JSON
       }, error = function(e) {
         stop("Error uploading data: ", e$message)
       })
@@ -28,7 +31,7 @@ MetaAnalysisClient <- R6::R6Class(
     perform_analysis = function(method = "REML", model = "random", test = "z") {
       url <- paste0(self$base_url, "/analyze")
       tryCatch({
-        response <- POST(
+        response <- httr::POST(
           url,
           body = list(
             method = method,
@@ -37,8 +40,8 @@ MetaAnalysisClient <- R6::R6Class(
           ),
           encode = "json"
         )
-        stop_for_status(response)
-        content(response, "parsed")
+        httr::stop_for_status(response)
+        httr::content(response, "parsed")
       }, error = function(e) {
         stop("Error performing analysis: ", e$message)
       })
@@ -47,9 +50,9 @@ MetaAnalysisClient <- R6::R6Class(
     get_results = function(type = "summary") {
       url <- paste0(self$base_url, "/results")
       tryCatch({
-        response <- GET(url, query = list(type = type))
-        stop_for_status(response)
-        content(response, "parsed")
+        response <- httr::GET(url, query = list(type = type))
+        httr::stop_for_status(response)
+        httr::content(response, "parsed")
       }, error = function(e) {
         stop("Error retrieving results: ", e$message)
       })
@@ -58,8 +61,8 @@ MetaAnalysisClient <- R6::R6Class(
     get_visualization = function(plot_type = "forest", file_path = NULL) {
       url <- paste0(self$base_url, "/visualize")
       tryCatch({
-        response <- GET(url, query = list(plot_type = plot_type))
-        stop_for_status(response)
+        response <- httr::GET(url, query = list(plot_type = plot_type))
+        httr::stop_for_status(response)
         
         # Check content type for valid image
         content_type <- headers(response)[["content-type"]]
@@ -69,9 +72,9 @@ MetaAnalysisClient <- R6::R6Class(
         
         # Handle raw data for visualization
         if (is.null(file_path)) {
-          content(response, "raw")
+          httr::content(response, "raw")
         } else {
-          writeBin(content(response, "raw"), file_path)
+          writeBin(httr::content(response, "raw"), file_path)
           message(paste("Plot saved to", file_path))
         }
       }, error = function(e) {
@@ -82,7 +85,7 @@ MetaAnalysisClient <- R6::R6Class(
     perform_sensitivity_analysis = function(analysis_type, params = list()) {
       url <- paste0(self$base_url, "/sensitivity")
       tryCatch({
-        response <- POST(
+        response <- httr::POST(
           url,
           body = list(
             analysis_type = analysis_type,
@@ -90,8 +93,8 @@ MetaAnalysisClient <- R6::R6Class(
           ),
           encode = "json"
         )
-        stop_for_status(response)
-        content(response, "parsed")
+        httr::stop_for_status(response)
+        httr::content(response, "parsed")
       }, error = function(e) {
         stop("Error performing sensitivity analysis: ", e$message)
       })

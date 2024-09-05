@@ -1,5 +1,5 @@
 library(R6)
-source("meta_analysis_client.R")
+source("R/meta_analysis_client.R")
 
 # Initialize the client
 client <- MetaAnalysisClient$new(paste0("http://localhost:", Sys.getenv("APP_PORT", "8000")))
@@ -26,7 +26,7 @@ if (check_api_status(client)) {
   
   # Step 1: Upload data
   tryCatch({
-    upload_result <- client$upload_data("path/to/your/data.csv", "csv")
+    upload_result <- client$upload_data("data/example_data.csv", "csv")
     print("Data upload result:")
     print(upload_result)
   }, error = function(e) {
