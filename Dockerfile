@@ -15,5 +15,5 @@ EXPOSE $APP_PORT
 # Add healthcheck
 HEALTHCHECK CMD curl -f http://localhost:$APP_PORT/health || exit 1
 
-# Run tests and then start the API
-CMD ["sh", "-c", "Rscript tests/run_tests.R && Rscript run_api.R"]
+# Run the API
+CMD ["Rscript", "run_api.R"]
